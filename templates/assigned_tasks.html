@@ -1,0 +1,151 @@
+
+{% extends 'base.html' %}
+
+{% block title %}
+    My Tasks ·  AlertIQ
+{% endblock %}
+
+{% block heading %}
+    My Tasks
+{% endblock %}
+
+{% block breadcrumb %}
+    My Tasks
+{% endblock %}
+
+{% block content %}
+
+    <p class="page-title-bar">
+        📋 Assigned Tasks
+    </p>
+
+    <section class="section">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    Follow-up Tasks
+                </h2>
+
+                <p class="section-description">
+                    Automatically created from client requests
+                </p>
+
+            </div>
+
+            <span class="client-total">
+                {{ tasks|length }} Tasks
+            </span>
+
+        </div>
+
+        {% if tasks %}
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Task</th>
+                            <th>Client</th>
+                            <th>Due Date</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for t in tasks %}
+
+                            <tr>
+
+                                <td>
+
+                                    <strong>
+                                        {{ t['title'] }}
+                                    </strong>
+
+                                    <p class="task-description">
+                                        {{ (t['description'] or '')[:100] }}
+                                    </p>
+
+                                </td>
+
+                                <td>
+                                    {{ t['client_name'] }}
+                                </td>
+
+                                <td>
+                                    {{ t['due_date'] }}
+                                </td>
+
+                                <td>
+
+                                    <span class="priority {{ t['priority']|lower }}">
+                                        {{ t['priority'] }}
+                                    </span>
+
+                                </td>
+
+                                <td>
+
+                                    <span class="task-badge {{ t['display_status']|lower }}-badge">
+                                        {{ t['display_status'] }}
+                                    </span>
+
+                                </td>
+
+                                <td>
+
+                                    {% if t['status'] != 'Completed' %}
+
+                                        <form
+                                            action="{{ url_for('complete_task', task_id=t['id']) }}"
+                                            method="post"
+                                        >
+
+                                            <button
+                                                class="complete-btn"
+                                                type="submit"
+                                            >
+                                                Complete
+                                            </button>
+
+                                        </form>
+
+                                    {% else %}
+
+                                        —
+
+                                    {% endif %}
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-state">
+                No follow-up tasks yet. Send a test email and sync Gmail.
+            </div>
+
+        {% endif %}
+
+    </section>
+
+{% endblock %}
