@@ -1,0 +1,159 @@
+
+{% extends 'base.html' %}
+
+{% block title %}
+    AI Assistant ·  AlertIQ
+{% endblock %}
+
+{% block heading %}
+    AI Operations Assistant
+{% endblock %}
+
+{% block breadcrumb %}
+    AI Assistant
+{% endblock %}
+
+{% block content %}
+
+<div style="max-width: 850px; margin: 0 auto;">
+
+    <div style="margin-bottom: 25px;">
+        <h2>✨ Ask AlertIQ</h2>
+        <p style="color: #64748b; margin-top: 8px;">
+            Your AI operations copilot. Ask about your
+            assigned tasks, client follow-ups and deadlines.
+        </p>
+    </div>
+
+    <!-- Suggested questions -->
+    <section style="margin-bottom: 25px;">
+        <h3 style="margin-bottom: 12px;">
+            Suggested Questions
+        </h3>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+
+            {% set suggestions = [
+                "What needs my attention today?",
+                "Which tasks are overdue?",
+                "Which clients are waiting for a response?",
+                "What should I follow up on first?",
+                "Summarize my outstanding work."
+            ] %}
+
+            {% for suggestion in suggestions %}
+                <form action="{{ url_for('assistant') }}"
+                      method="post">
+                    <button
+                        type="submit"
+                        name="question"
+                        value="{{ suggestion }}"
+                        style="
+                            padding: 11px 15px;
+                            background: #ffffff;
+                            border: 1px solid #cbd5e1;
+                            border-radius: 10px;
+                            cursor: pointer;
+                            color: #334155;
+                            text-align: left;
+                        "
+                    >
+                        {{ suggestion }}
+                    </button>
+                </form>
+            {% endfor %}
+
+        </div>
+    </section>
+
+    <!-- Question input -->
+    <section style="
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 22px;
+        margin-bottom: 22px;
+    ">
+
+        <form action="{{ url_for('assistant') }}"
+              method="post">
+
+            <label for="question"
+                   style="display: block; font-weight: 600;
+                          margin-bottom: 12px;">
+                Ask your assistant
+            </label>
+
+            <textarea
+                id="question"
+                name="question"
+                rows="3"
+                maxlength="1000"
+                required
+                placeholder="e.g. What should I prioritize today?"
+                style="
+                    width: 100%;
+                    box-sizing: border-box;
+                    padding: 14px;
+                    border: 1px solid #cbd5e1;
+                    border-radius: 10px;
+                    font: inherit;
+                    resize: vertical;
+                "
+            >{{ question }}</textarea>
+
+            <button
+                type="submit"
+                style="
+                    margin-top: 15px;
+                    padding: 12px 24px;
+                    background: #2563eb;
+                    color: white;
+                    border: none;
+                    border-radius: 9px;
+                    font-weight: 600;
+                    cursor: pointer;
+                "
+            >
+                ✨ Ask AlertIQ
+            </button>
+
+        </form>
+    </section>
+
+    <!-- AI response -->
+    {% if answer %}
+        <section style="
+            background: white;
+            border: 1px solid #dbeafe;
+            border-radius: 14px;
+            padding: 24px;
+        ">
+
+            <h3 style="margin-bottom: 15px;">
+                ✨ AlertIQ Response
+            </h3>
+
+            <div style="
+                line-height: 1.8;
+                color: #334155;
+                white-space: pre-wrap;
+                overflow-wrap: anywhere;
+            ">{{ answer }}</div>
+
+        </section>
+    {% endif %}
+
+    <p style="
+        margin-top: 20px;
+        color: #94a3b8;
+        font-size: 12px;
+        text-align: center;
+    ">
+        Answers are generated from your assigned AlertIQ
+        task records. Verify important details before acting.
+    </p>
+
+</div>
+
+{% endblock %}
