@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% block title %} AlertIQ{% endblock %}
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}?v=3"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/assistant.css') }}?v=1"
+    >
+</head>
+
+<body>
+
+    <div class="app" id="app">
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+
+            <a
+                class="logo"
+                href="{{ url_for('dashboard') }}"
+            >
+                <span class="logo-mark">
+                    <img
+                        src="{{ url_for('static', filename='images/logo.png') }}"
+                        alt="Logo"
+                    >
+                </span>
+
+                <span>
+                    <strong>AlertIQ</strong>
+                </span>
+            </a>
+
+            <div class="nav-title">
+                NAVIGATION
+            </div>
+
+            <nav>
+
+                <a
+                    href="{{ url_for('dashboard') }}"
+                    class="{% if request.endpoint == 'dashboard' %}active{% endif %}"
+                >
+                    🏠
+                    <span>Dashboard</span>
+                </a>
+
+                <a
+                    href="{{ url_for('clients') }}"
+                    class="{% if request.endpoint == 'clients' %}active{% endif %}"
+                >
+                    👥
+                    <span>Clients</span>
+                </a>
+
+                <a
+                    href="{{ url_for('assigned_tasks') }}"
+                    class="{% if request.endpoint == 'assigned_tasks' %}active{% endif %}"
+                >
+                    📋
+                    <span>My Tasks</span>
+                </a>
+
+            </nav>
+
+        </aside>
+
+
+        <!-- Main layout -->
+        <div class="content-wrapper">
+
+            <!-- Top header -->
+            <header class="top-header">
+
+                <div class="left-actions">
+
+                    <button
+                        type="button"
+                        id="menuToggle"
+                        class="menu-toggle"
+                        aria-label="Toggle sidebar"
+                        aria-expanded="true"
+                    >
+                        ☰
+                    </button>
+
+                    <form
+                        action="{{ url_for('sync') }}"
+                        method="post"
+                    >
+                        <button
+                            class="sync-btn"
+                            type="submit"
+                        >
+                            ＋ Sync Gmail
+                        </button>
+                    </form>
+
+                </div>
+
+
+                <div class="header-actions">
+
+                    <!-- Notification bell -->
+                    <div
+                        class="notification-wrapper"
+                        id="notificationWrapper"
+                    >
+
+                        <button
+                            type="button"
+                            id="notificationBell"
+                            class="notification-icon"
+                            aria-label="Notifications"
+                            aria-expanded="false"
+                        >
+                            🔔
+
+                            <span
+                                id="notificationCount"
+                                class="notification-count"
+                                {% if not unread_count %}hidden{% endif %}
+                            >
+                                {{ unread_count }}
+                            </span>
+                        </button>
+
+
+                        <div
+                            id="notificationDropdown"
+                            class="notification-dropdown"
+                            hidden
+                        >
+
+                            <div class="notification-header">
+                                Notifications
+                            </div>
+
+                            <div
+                                id="notificationList"
+                                class="notification-list"
+                            >
+                                Loading...
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Operator -->
+                    <span class="operator">
+
+                        <span class="avatar">
+                            👤
+                        </span>
+
+                        <span>
+                            Hello, {{ operator_name }}
+                        </span>
+
+                    </span>
+
+
+                    <!-- Logout -->
+                    <form
+                        action="{{ url_for('logout') }}"
+                        method="post"
+                    >
+                        <button
+                            class="logout-btn"
+                            type="submit"
+                        >
+                            Logout
+                        </button>
+                    </form>
+
+                </div>
+
+            </header>
+
+
+            <!-- Page heading -->
+            <div class="sub-header">
+
+                <h1>
+                    {% block heading %}{% endblock %}
+                </h1>
+
+                <span class="breadcrumbs">
+                    AlertIQ /
+                    {% block breadcrumb %}{% endblock %}
+                </span>
+
+            </div>
+
+
+            <!-- Page content -->
+            <main class="main-content">
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+
+                    {% for category, message in messages %}
+
+                        <div class="flash-message {{ category }}">
+                            {{ message }}
+                        </div>
+
+                    {% endfor %}
+
+                {% endwith %}
+
+                {% block content %}{% endblock %}
+
+            </main>
+
+        </div>
+
+    </div>
+
+
+    <!-- AlertIQ AI Assistant -->
+    <div id="aiAssistant">
+
+        <button
+            type="button"
+            id="aiAssistantButton"
+            class="ai-assistant-button"
+            aria-label="Open AlertIQ AI Assistant"
+        >
+            ✨
+        </button>
+
+
+        <div
+            id="aiAssistantWindow"
+            class="ai-assistant-window"
+            hidden
+        >
+
+            <div class="ai-assistant-header">
+
+                <div>
+                    <strong>✨ AlertIQ Assistant</strong>
+                    <small>AI Operations Copilot</small>
+                </div>
+
+                <button
+                    type="button"
+                    id="aiAssistantClose"
+                    class="ai-assistant-close"
+                    aria-label="Close assistant"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <div
+                id="aiAssistantMessages"
+                class="ai-assistant-messages"
+            >
+
+                <div class="ai-message">
+
+                    <strong>✨ AlertIQ</strong>
+
+                    <p>
+                        Hi! I can help you with your tasks,
+                        client follow-ups and deadlines.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <form
+                id="aiAssistantForm"
+                class="ai-assistant-form"
+            >
+
+                <input
+                    type="text"
+                    id="aiAssistantInput"
+                    placeholder="Ask AlertIQ..."
+                    maxlength="1000"
+                    autocomplete="off"
+                >
+
+                <button
+                    type="submit"
+                    aria-label="Send"
+                >
+                    ➤
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <script
+        src="{{ url_for('static', filename='js/app.js') }}?v=4"
+        defer
+    ></script>
+
+    <script
+        src="{{ url_for('static', filename='js/assistant.js') }}?v=1"
+        defer
+    ></script>
+
+</body>
+</html>
